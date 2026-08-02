@@ -1,5 +1,5 @@
 /**
- * Helper para Context Engineering
+ * Helper para Context Engineering - Week 4
  * Une los archivos de contexto en memoria y auto-crea hitos_prompted/ si falta.
  */
 
@@ -25,15 +25,15 @@ function getCompiledPrompt(hitoNum = '1') {
   const plantumlGuideText = fs.existsSync(plantumlGuideFile) ? fs.readFileSync(plantumlGuideFile, 'utf8') : '';
   const markdownGuideText = fs.existsSync(markdownGuideFile) ? fs.readFileSync(markdownGuideFile, 'utf8') : '';
   
-  // SOLAMENTE para Hito 3 se inyectan los estándares de requerimientos NASA/IBM
-  const reqStandardsText = (hitoNum === '3' && fs.existsSync(reqStandardsFile)) 
+  // Incluir requerimientos NASA/IBM cuando sea relevante
+  const reqStandardsText = fs.existsSync(reqStandardsFile) 
     ? `\nREQUIREMENTS ENGINEERING STANDARDS (NASA & IBM DOORS):\n${fs.readFileSync(reqStandardsFile, 'utf8')}\n` 
     : '';
 
   // Auto-creación de hitos_prompted/hitoX_prompt.md si solo existe hitos/hitoX.md
   if (!fs.existsSync(promptedFile) && fs.existsSync(rawHitoFile)) {
     const rawText = fs.readFileSync(rawHitoFile, 'utf8');
-    const autoPromptContent = `# Context Engineering Prompt - Hito ${hitoNum}
+    const autoPromptContent = `# Context Engineering Prompt - Hito ${hitoNum} (Week 4)
 
 ## Contexto de Referencia
 Asimila las directrices del rol en \`../context/role.md\`, el marco metodológico en \`../context/architecture_framework.md\`, la descripción en \`../context/problem_description.md\` y los estándares en \`../context/plantuml_guide.md\` y \`../context/markdown_guide.md\`.

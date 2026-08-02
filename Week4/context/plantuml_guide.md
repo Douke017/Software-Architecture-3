@@ -1,4 +1,4 @@
-# Guía Estándar de Diagramación en PlantUML (PlantUML Syntax & Best Practices)
+# Guía Estándar de Diagramación en PlantUML (PlantUML Syntax & Best Practices - Week 4)
 
 Esta guía define las reglas de sintaxis estrictas y patrones de diseño visual en **PlantUML** para garantizar que todos los diagramas arquitectónicos generados sean **100% sintácticamente válidos, parseables y libres de errores**.
 
@@ -102,16 +102,3 @@ deactivate Worker
 
 @enduml
 ```
-
----
-
-## 4. Tabla de Errores Críticos a Evitar
-
-| Error Común en PlantUML | Causa del Error | Forma Correcta |
-| :--- | :--- | :--- |
-| `<<External Partner>>` | Espacios dentro de `<< >>`. | `<<ExternalPartner>>` |
-| `A <--> B` | Sintaxis de doble flecha con guion doble. | `A <-> B` o `A --> B` |
-| `actor User` en diagrama de componentes | Confunde al parser de diagramas. | `rectangle "Cliente" as User` |
-| `component Servicio Pedidos` | Falta de comillas en nombre con espacios. | `component "Servicio Pedidos" as OrderSvc` |
-| `<Service>` | Estereotipo con solo 1 corchete angular. | `<<Service>>` |
-| `endnote` | Palabra clave de nota pegada. | `end note` |

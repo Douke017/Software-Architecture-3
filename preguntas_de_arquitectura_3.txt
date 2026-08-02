@@ -1,0 +1,46 @@
+Durante toda la entrevista haremos énfasis en el rol de los LLM en todo el desarrollo de su trabajo y la incorporación de conocimientos fundamentales.
+
+Cosas que preguntaría:
+
+¿Qué problema intenta resolver una arquitectura dirigida por eventos y en qué se diferencia de una llamada síncrona entre servicios?
+
+¿Cuál es la diferencia entre un evento, un comando y un mensaje?
+Repregunta: "Dame un ejemplo de cada uno dentro del sistema que diseñaron."
+
+¿Qué función cumple un message broker dentro de una arquitectura distribuida?
+Repregunta: "¿Qué brokers conocen, te acordas alguno?"
+
+¿Cuál es la diferencia conceptual entre una queue y un esquema publish/subscribe?
+
+Si hay tres consumidores leyendo de una misma cola, ¿cada mensaje llega a los tres?
+
+¿Qué ocurre con un mensaje desde que el productor lo publica hasta que el consumidor termina de procesarlo?
+
+¿Qué es un acknowledgment y qué problema aparece si se confirma un mensaje antes de terminar de procesarlo?
+
+¿Qué puede ocurrir si un consumidor procesa correctamente un mensaje, pero falla antes de enviar el acknowledgment?
+
+¿Qué significa que un consumidor sea idempotente y por qué es importante en EDA?
+
+¿Qué es backpressure y qué señales permiten detectar que está ocurriendo?
+
+¿Qué opciones existen cuando una cola comienza a crecer más rápido de lo que los consumidores pueden procesarla?
+
+¿Qué métricas observarías para saber si un sistema de mensajería funciona correctamente?
+Espero una combinación de: throughput; latencia de procesamiento; end-to-end latency; profundidad de cola; antigüedad del mensaje más viejo; tasa de errores y reintentos; utilización de consumidores.
+
+Repregunta: "¿Cuál de estas métricas registraron o podrían haber registrado en el laboratorio?"
+
+¿Cuál es la diferencia entre throughput y latencia? ¿Puede mejorar una y empeorar la otra?
+
+¿Cómo diseñarías un proceso que puede tardar varios minutos sin mantener bloqueada una solicitud HTTP?
+
+Vamos a tomar uno o dos laboratorios y puntualizar cosas en el. Esperen algo como: 
+"explicá qué componente construiste/diseñaste, qué decisión técnica tomaste y cómo comprobarías que es solida, que funciona, como defenderias tu decisión técnica ante stakeholders"
+
+Una respuesta sólida debería incluir:
+responsabilidad concreta;
+archivos, clases o configuraciones;
+recorrido de un mensaje/evento;
+decisión de diseño y alternativa descartada;
+errores encontrados en las respuestas de la IA y forma de resolverlo.
