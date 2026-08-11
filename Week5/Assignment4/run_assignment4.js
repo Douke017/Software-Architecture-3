@@ -1,10 +1,10 @@
 /**
- * Runner oficial para el informe final de síntesis (report.md) - Week 4
- * Compila el contexto global, lee los outputs de los hitos existentes y genera report.md.
+ * Runner oficial para Assignment 4 usando Gemini API
+ * Compila el contexto de Assignment 4 (Modelo C4 Extendido + Contrapresión + UI Mockups) en memoria.
  * 
  * Uso:
  *   $env:GEMINI_API_KEY="tu_api_key"
- *   node Week4/run_report.js [modelo]
+ *   node Week5/Assignment4/run_assignment4.js [modelo]
  */
 
 const fs = require('fs');
@@ -14,16 +14,18 @@ const modelName = process.argv[2] || 'gemini-2.5-flash';
 const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
 const baseDir = __dirname;
+const week5Dir = path.join(baseDir, '..');
 
-const roleFile = path.join(baseDir, 'context', 'role.md');
-const frameworkFile = path.join(baseDir, 'context', 'architecture_framework.md');
-const markdownGuideFile = path.join(baseDir, 'context', 'markdown_guide.md');
-const plantumlGuideFile = path.join(baseDir, 'context', 'plantuml_guide.md');
-const problemFile = path.join(baseDir, 'context', 'problem_description.md');
-const promptFile = path.join(baseDir, 'hitos_prompted', 'report_prompt.md');
+const roleFile = path.join(week5Dir, 'context', 'role.md');
+const frameworkFile = path.join(week5Dir, 'context', 'architecture_framework.md');
+const markdownGuideFile = path.join(week5Dir, 'context', 'markdown_guide.md');
+const plantumlGuideFile = path.join(week5Dir, 'context', 'plantuml_guide.md');
+const c4GuideFile = path.join(week5Dir, 'context', 'structurizr_c4_guide.md');
 
-const outputFileRoot = path.join(baseDir, 'report.md');
-const outputFileOutputs = path.join(baseDir, 'outputs', 'report.md');
+const problemFile = path.join(baseDir, 'problem_description.md');
+const objectivesFile = path.join(baseDir, 'specifics_objectives.md');
+const promptFile = path.join(baseDir, 'prompt_assignment4.md');
+const outputFile = path.join(baseDir, 'assignment4_output.md');
 
 if (!apiKey) {
   console.error(`\n[ERROR] No se encontró la variable de entorno GEMINI_API_KEY.`);
@@ -37,19 +39,11 @@ function getCompiledPrompt() {
   const frameworkText = fs.readFileSync(frameworkFile, 'utf8');
   const markdownGuideText = fs.readFileSync(markdownGuideFile, 'utf8');
   const plantumlGuideText = fs.readFileSync(plantumlGuideFile, 'utf8');
-  const problemText = fs.readFileSync(problemFile, 'utf8');
-  const promptText = fs.readFileSync(promptFile, 'utf8');
+  const c4GuideText = fs.readFileSync(c4GuideFile, 'utf8');
 
-  // Leer outputs de los hitos acumulados si existen
-  let milestoneOutputsText = '';
-  const outputsDir = path.join(baseDir, 'outputs');
-  if (fs.existsSync(outputsDir)) {
-    const files = fs.readdirSync(outputsDir).filter(f => f.startsWith('output') && f.endsWith('.md') && f !== 'report.md');
-    files.forEach(f => {
-      const content = fs.readFileSync(path.join(outputsDir, f), 'utf8');
-      milestoneOutputsText += `\n--- PREVIOUS MILESTONE OUTPUT (${f}) ---\n${content}\n`;
-    });
-  }
+  const problemText = fs.readFileSync(problemFile, 'utf8');
+  const objectivesText = fs.readFileSync(objectivesFile, 'utf8');
+  const promptText = fs.readFileSync(promptFile, 'utf8');
 
   return `
 SYSTEM ROLE DIRECTIVES:
@@ -64,22 +58,25 @@ ${markdownGuideText}
 PLANTUML SYNTAX & BEST PRACTICES STANDARDS:
 ${plantumlGuideText}
 
-BUSINESS & TECHNICAL CONTEXT:
+STRUCTURIZR & C4 MODEL STANDARDS:
+${c4GuideText}
+
+ASSIGNMENT 4 BUSINESS CONTEXT:
 ${problemText}
 
-ACCUMULATED MILESTONE OUTPUTS:
-${milestoneOutputsText}
+ASSIGNMENT 4 SPECIFIC OBJECTIVES:
+${objectivesText}
 
-FINAL CONSOLIDATED REPORT GUIDED INSTRUCTIONS:
+ASSIGNMENT 4 GUIDED INSTRUCTIONS:
 ${promptText}
 `.trim();
 }
 
 async function generate() {
-  console.log(`[INFO] Compilando prompt consolidado de report.md de la Semana 4 en memoria...`);
+  console.log(`[INFO] Compilando prompt de Assignment 4 (Modelo C4 Extendido + Contrapresión + UI Mockups) en memoria...`);
   const fullPrompt = getCompiledPrompt();
 
-  console.log(`[INFO] Enviando prompt de report.md a Gemini API (Modelo: ${modelName})...`);
+  console.log(`[INFO] Enviando prompt de Assignment 4 a Gemini API (Modelo: ${modelName})...`);
   
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
@@ -119,17 +116,8 @@ async function generate() {
       throw new Error('La respuesta de Gemini API no contiene texto válido.');
     }
 
-    const outputsDir = path.join(baseDir, 'outputs');
-    if (!fs.existsSync(outputsDir)) {
-      fs.mkdirSync(outputsDir, { recursive: true });
-    }
-
-    fs.writeFileSync(outputFileRoot, resultText, 'utf8');
-    fs.writeFileSync(outputFileOutputs, resultText, 'utf8');
-    
-    console.log(`[ÉXITO] Informe final consolidado guardado en:`);
-    console.log(`  - ${outputFileRoot}`);
-    console.log(`  - ${outputFileOutputs}\n`);
+    fs.writeFileSync(outputFile, resultText, 'utf8');
+    console.log(`[ÉXITO] Respuesta de Assignment 4 guardada correctamente en: ${outputFile}\n`);
 
   } catch (err) {
     console.error(`[ERROR API] ${err.message}`);

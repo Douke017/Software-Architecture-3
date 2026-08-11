@@ -1,10 +1,10 @@
 /**
- * Runner oficial para el informe final de síntesis (report.md) - Week 4
- * Compila el contexto global, lee los outputs de los hitos existentes y genera report.md.
+ * Runner oficial para el informe final de síntesis (report.md) - Week 5
+ * Genera el "Documento de diseño ASM de BookSphere" compilando los outputs acumulados.
  * 
  * Uso:
  *   $env:GEMINI_API_KEY="tu_api_key"
- *   node Week4/run_report.js [modelo]
+ *   node Week5/run_report.js [modelo]
  */
 
 const fs = require('fs');
@@ -19,6 +19,9 @@ const roleFile = path.join(baseDir, 'context', 'role.md');
 const frameworkFile = path.join(baseDir, 'context', 'architecture_framework.md');
 const markdownGuideFile = path.join(baseDir, 'context', 'markdown_guide.md');
 const plantumlGuideFile = path.join(baseDir, 'context', 'plantuml_guide.md');
+const edaGuideFile = path.join(baseDir, 'context', 'eda_patterns_guide.md');
+const dddGuideFile = path.join(baseDir, 'context', 'domain_driven_design_guide.md');
+const resilienceGuideFile = path.join(baseDir, 'context', 'resilience_patterns_guide.md');
 const problemFile = path.join(baseDir, 'context', 'problem_description.md');
 const promptFile = path.join(baseDir, 'hitos_prompted', 'report_prompt.md');
 
@@ -37,10 +40,13 @@ function getCompiledPrompt() {
   const frameworkText = fs.readFileSync(frameworkFile, 'utf8');
   const markdownGuideText = fs.readFileSync(markdownGuideFile, 'utf8');
   const plantumlGuideText = fs.readFileSync(plantumlGuideFile, 'utf8');
+  const edaGuideText = fs.existsSync(edaGuideFile) ? fs.readFileSync(edaGuideFile, 'utf8') : '';
+  const dddGuideText = fs.existsSync(dddGuideFile) ? fs.readFileSync(dddGuideFile, 'utf8') : '';
+  const resilienceGuideText = fs.existsSync(resilienceGuideFile) ? fs.readFileSync(resilienceGuideFile, 'utf8') : '';
   const problemText = fs.readFileSync(problemFile, 'utf8');
   const promptText = fs.readFileSync(promptFile, 'utf8');
 
-  // Leer outputs de los hitos acumulados si existen
+  // Leer outputs acumulados
   let milestoneOutputsText = '';
   const outputsDir = path.join(baseDir, 'outputs');
   if (fs.existsSync(outputsDir)) {
@@ -64,19 +70,24 @@ ${markdownGuideText}
 PLANTUML SYNTAX & BEST PRACTICES STANDARDS:
 ${plantumlGuideText}
 
-BUSINESS & TECHNICAL CONTEXT:
+SPECIALIZED GUIDES:
+${edaGuideText}
+${dddGuideText}
+${resilienceGuideText}
+
+BUSINESS & TECHNICAL CONTEXT (BOOKSPHERE):
 ${problemText}
 
 ACCUMULATED MILESTONE OUTPUTS:
 ${milestoneOutputsText}
 
-FINAL CONSOLIDATED REPORT GUIDED INSTRUCTIONS:
+FINAL ASM REPORT GUIDED INSTRUCTIONS:
 ${promptText}
 `.trim();
 }
 
 async function generate() {
-  console.log(`[INFO] Compilando prompt consolidado de report.md de la Semana 4 en memoria...`);
+  console.log(`[INFO] Compilando prompt del Documento de Diseño ASM de BookSphere (report.md)...`);
   const fullPrompt = getCompiledPrompt();
 
   console.log(`[INFO] Enviando prompt de report.md a Gemini API (Modelo: ${modelName})...`);
@@ -127,7 +138,7 @@ async function generate() {
     fs.writeFileSync(outputFileRoot, resultText, 'utf8');
     fs.writeFileSync(outputFileOutputs, resultText, 'utf8');
     
-    console.log(`[ÉXITO] Informe final consolidado guardado en:`);
+    console.log(`[ÉXITO] Documento de diseño ASM de BookSphere guardado en:`);
     console.log(`  - ${outputFileRoot}`);
     console.log(`  - ${outputFileOutputs}\n`);
 
