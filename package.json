@@ -1,0 +1,12 @@
+{
+  "name": "software-architecture-3",
+  "version": "1.0.0",
+  "description": "Software Architecture 3 - Course Automation Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0"
+  }
+}
