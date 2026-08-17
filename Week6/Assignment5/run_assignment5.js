@@ -18,19 +18,23 @@ const week6Dir = path.join(baseDir, '..');
 const sharedDir = path.join(week6Dir, '..', 'shared_context');
 
 function getCompiledPrompt() {
-    const roleFile = path.join(sharedDir, 'role.md');
+    // 1. Rol temático de la semana
+    const roleFile = path.join(week6Dir, 'context', 'role.md');
+    const roleText = fs.existsSync(roleFile) ? fs.readFileSync(roleFile, 'utf8') : '';
+
+    // 2. Skills técnicas compartidas
+    const c4File = path.join(sharedDir, 'structurizr_c4_guide.md');
     const plantumlFile = path.join(sharedDir, 'plantuml_guide.md');
     const markdownFile = path.join(sharedDir, 'markdown_guide.md');
-    const c4File = path.join(sharedDir, 'structurizr_c4_guide.md');
 
+    const c4Text = fs.readFileSync(c4File, 'utf8');
+    const plantumlText = fs.readFileSync(plantumlFile, 'utf8');
+    const markdownText = fs.readFileSync(markdownFile, 'utf8');
+
+    // 3. Problema y objetivos del Assignment 5
     const problemFile = path.join(baseDir, 'problem_description.md');
     const objectivesFile = path.join(baseDir, 'specifics_objectives.md');
     const promptFile = path.join(baseDir, 'prompt_assignment5.md');
-
-    const roleText = fs.readFileSync(roleFile, 'utf8');
-    const plantumlText = fs.readFileSync(plantumlFile, 'utf8');
-    const markdownText = fs.readFileSync(markdownFile, 'utf8');
-    const c4Text = fs.readFileSync(c4File, 'utf8');
 
     const problemText = fs.readFileSync(problemFile, 'utf8');
     const objectivesText = fs.readFileSync(objectivesFile, 'utf8');
@@ -38,28 +42,32 @@ function getCompiledPrompt() {
 
     return `
 =========================================
-SYSTEM ROLE DIRECTIVES & SHARED CONTEXT
+DIRECTIVA DE ROL DE LA SEMANA (WEEK ROLE)
 =========================================
 ${roleText}
 
---- PLANTUML SYNTAX & LINTER STANDARDS ---
-${plantumlText}
+=========================================
+SKILLS Y ESTÁNDARES TÉCNICOS GLOBALES (SHARED SKILLS)
+=========================================
 
---- MARKDOWN FORMATTING STANDARDS ---
-${markdownText}
-
---- STRUCTURIZR & C4 MODEL STANDARDS ---
+--- GUÍA MAESTRA DE STRUCTURIZR & MODELO C4 (C4-PLANTUML STANDARD) ---
 ${c4Text}
 
+--- GUÍA DE PLANTUML & LINTER ANTI-ERRORES ---
+${plantumlText}
+
+--- ESTÁNDAR DE FORMATO MARKDOWN ---
+${markdownText}
+
 =========================================
-ASSIGNMENT 5 SPECIFIC PROBLEM & OBJECTIVES
+ASSIGNMENT 5: DOMINIO DE PEDIDOS GUIADO POR EVENTOS
 =========================================
 ${problemText}
 
 ${objectivesText}
 
 =========================================
-ASSIGNMENT 5 MASTER PROMPT
+TAREAS ESPECÍFICAS DE GENERACIÓN
 =========================================
 ${promptText}
 `;
