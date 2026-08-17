@@ -1,112 +1,61 @@
-/**
- * Helper para Context Engineering - Week 5
- * Une los archivos de contexto, guías especializadas de arquitectura senior en memoria
- * y auto-crea hitos_prompted/ si falta.
- */
-
 const fs = require('fs');
 const path = require('path');
 
-function getCompiledPrompt(hitoNum = '1') {
-  const baseDir = __dirname;
-  const roleFile = path.join(baseDir, 'context', 'role.md');
-  const frameworkFile = path.join(baseDir, 'context', 'architecture_framework.md');
-  const problemFile = path.join(baseDir, 'context', 'problem_description.md');
-  const plantumlGuideFile = path.join(baseDir, 'context', 'plantuml_guide.md');
-  const markdownGuideFile = path.join(baseDir, 'context', 'markdown_guide.md');
-  const reqStandardsFile = path.join(baseDir, 'context', 'requirements_standards.md');
-  
-  // Archivos de documentación y skills de arquitectura sénior adicionales
-  const edaGuideFile = path.join(baseDir, 'context', 'eda_patterns_guide.md');
-  const dddGuideFile = path.join(baseDir, 'context', 'domain_driven_design_guide.md');
-  const resilienceGuideFile = path.join(baseDir, 'context', 'resilience_patterns_guide.md');
-  
-  const promptedDir = path.join(baseDir, 'hitos_prompted');
-  const promptedFile = path.join(promptedDir, `hito${hitoNum}_prompt.md`);
-  const rawHitoFile = path.join(baseDir, 'hitos', `hito${hitoNum}.md`);
+function readContextFile(filename, weekDir) {
+    const weekContextFile = path.join(weekDir, 'context', filename);
+    const sharedContextFile = path.join(__dirname, '..', 'shared_context', filename);
 
-  const roleText = fs.readFileSync(roleFile, 'utf8');
-  const frameworkText = fs.readFileSync(frameworkFile, 'utf8');
-  const problemText = fs.readFileSync(problemFile, 'utf8');
-  const plantumlGuideText = fs.existsSync(plantumlGuideFile) ? fs.readFileSync(plantumlGuideFile, 'utf8') : '';
-  const markdownGuideText = fs.existsSync(markdownGuideFile) ? fs.readFileSync(markdownGuideFile, 'utf8') : '';
-  
-  const reqStandardsText = fs.existsSync(reqStandardsFile) 
-    ? `\nREQUIREMENTS ENGINEERING STANDARDS (NASA & IBM DOORS):\n${fs.readFileSync(reqStandardsFile, 'utf8')}\n` 
-    : '';
-
-  const edaGuideText = fs.existsSync(edaGuideFile) ? `\nSENIOR ARCHITECTURE REFERENCE - EVENT-DRIVEN PATTERNS:\n${fs.readFileSync(edaGuideFile, 'utf8')}\n` : '';
-  const dddGuideText = fs.existsSync(dddGuideFile) ? `\nSENIOR ARCHITECTURE REFERENCE - DDD & CONTEXT MAPPING:\n${fs.readFileSync(dddGuideFile, 'utf8')}\n` : '';
-  const resilienceGuideText = fs.existsSync(resilienceGuideFile) ? `\nSENIOR ARCHITECTURE REFERENCE - RESILIENCE & FDIR PATTERNS:\n${fs.readFileSync(resilienceGuideFile, 'utf8')}\n` : '';
-
-  // Auto-creación de hitos_prompted/hitoX_prompt.md si solo existe hitos/hitoX.md
-  if (!fs.existsSync(promptedFile) && fs.existsSync(rawHitoFile)) {
-    const rawText = fs.readFileSync(rawHitoFile, 'utf8');
-    const autoPromptContent = `# Context Engineering Prompt - Hito ${hitoNum} (Week 5)
-
-## Contexto de Referencia
-Asimila las directrices del rol en \`../context/role.md\`, el marco metodológico en \`../context/architecture_framework.md\`, la descripción del monolito BookSphere en \`../context/problem_description.md\` y los estándares de guías especializadas de arquitectura en \`../context/\`.
-La especificación de origen proviene de \`../hitos/hito${hitoNum}.md\`.
-
----
-
-## Directivas Arquitectónicas para el Modelo
-
-Analiza y desarrolla la solución técnica de arquitectura a alto nivel para el **Hito ${hitoNum}** según la especificación:
-
-${rawText}
-
----
-
-## Entregable
-Guarda la respuesta en \`../outputs/output${hitoNum}.md\`.
-`;
-    if (!fs.existsSync(promptedDir)) {
-      fs.mkdirSync(promptedDir, { recursive: true });
+    if (fs.existsSync(weekContextFile)) {
+        return fs.readFileSync(weekContextFile, 'utf8');
+    } else if (fs.existsSync(sharedContextFile)) {
+        return fs.readFileSync(sharedContextFile, 'utf8');
     }
-    fs.writeFileSync(promptedFile, autoPromptContent, 'utf8');
-    console.log(`[AUTO-GENERADO] Se creó automáticamente el prompt guiado en: ${promptedFile}`);
-  }
+    return '';
+}
 
-  // Cargar el prompt guiado
-  if (fs.existsSync(promptedFile)) {
-    const hitoText = fs.readFileSync(promptedFile, 'utf8');
+function getCompiledPrompt(hitoNumber) {
+    const weekDir = __dirname;
+    const hitosDir = path.join(weekDir, 'hitos_prompted');
+
+    const role = readContextFile('role.md', weekDir);
+    const problem = readContextFile('problem_description.md', weekDir);
+    const plantuml = readContextFile('plantuml_guide.md', weekDir);
+
+    const promptPath = path.join(hitosDir, `prompt${hitoNumber}.md`);
+    if (!fs.existsSync(promptPath)) {
+        throw new Error(`El prompt para el hito ${hitoNumber} no existe en ${promptPath}`);
+    }
+    const hitoPrompt = fs.readFileSync(promptPath, 'utf8');
+
     return `
-SYSTEM ROLE DIRECTIVES:
-${roleText}
+=========================================
+DIRECTIVAS Y CONTEXTO COMPARTIDO DEL SISTEMA
+=========================================
 
-GENERAL MICROSERVICES & DDD ARCHITECTURAL FRAMEWORK:
-${frameworkText}
+--- DIRECTIVA DE ROL DEL ARQUITECTO (SHARED ROLE) ---
+${role}
 
-MARKDOWN FORMATTING STANDARDS:
-${markdownGuideText}
+--- DESCRIPCIÓN DEL PROBLEMA DEL PROYECTO ---
+${problem}
 
-PLANTUML SYNTAX & BEST PRACTICES STANDARDS:
-${plantumlGuideText}
-${reqStandardsText}
-${edaGuideText}
-${dddGuideText}
-${resilienceGuideText}
-BUSINESS & TECHNICAL CONTEXT (BOOKSPHERE MONOLITH):
-${problemText}
+--- GUÍA DE PLANTUML Y REGLAS ANTI-ERRORES (SHARED LINTER) ---
+${plantuml}
 
-MILESTONE ${hitoNum} GUIDED INSTRUCTIONS:
-${hitoText}
-`.trim();
-  }
-
-  throw new Error(`[ERROR] No se encontró especificación para el hito ${hitoNum} en hitos/hito${hitoNum}.md`);
+=========================================
+TAREAS ESPECÍFICAS DEL HITO ${hitoNumber}
+=========================================
+${hitoPrompt}
+`;
 }
 
 if (require.main === module) {
-  const hitoNum = process.argv[2] || '1';
-  try {
-    const prompt = getCompiledPrompt(hitoNum);
-    console.log(`[OK] Prompt para Hito ${hitoNum} listo en memoria (${prompt.length} caracteres).`);
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
+    const hitoNum = process.argv[2] || 1;
+    try {
+        const prompt = getCompiledPrompt(hitoNum);
+        console.log(`[OK] Prompt para Hito ${hitoNum} listo en memoria (${prompt.length} caracteres).`);
+    } catch (e) {
+        console.error(`[ERROR] ${e.message}`);
+    }
 }
 
 module.exports = { getCompiledPrompt };

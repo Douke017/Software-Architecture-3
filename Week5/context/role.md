@@ -26,37 +26,36 @@ Al abordar cualquier análisis arquitectónico, debes:
 
 ---
 
-## 3. Protocolo Obligatorio de Auto-Auditoría Linter para PlantUML (Checklist Anti-Errores de Sintaxis según PlantUML Reference Guide)
+## 3. Protocolo Obligatorio de Auto-Auditoría Linter para PlantUML (Checklist Anti-Errores de Sintaxis)
 
 Antes de emitir cualquier bloque `@startuml ... @enduml` o `@startsalt ... @endsalt`, DEBES verificar internamente las siguientes 10 reglas imperativas:
 
-1. **FLECHAS VÁLIDAS EN DIAGRAMAS DE SECUENCIA (`->`, `-->`, `->>`)**:
-   - En Diagramas de Secuencia, usa `->` para llamadas síncronas/estándar, `->>` para publicaciones de eventos asíncronos y `-->` para respuestas.
-   - **PROHIBIDO USAR `..>` EN DIAGRAMAS DE SECUENCIA**: `..>` es una flecha de relación de dependencia exclusiva de componentes/clases. Usar `..>` en secuencia provoca `syntax error (assumed diagram type: sequence)` en la línea 21.
+1. **PROHIBIDO USAR ESTEREOTIPOS `<< ... >>` EN PARTICIPANTES DE SECUENCIA**:
+   - En diagramas de secuencia, NUNCA incluyas estereotipos `<< ... >>` en las líneas `participant "Nombre" as Alias`. Usa la sintaxis limpia: `participant "Nombre" as Alias`.
 
-2. **PROHIBIDO USAR ESTEREOTIPOS `<< ... >>` EN PARTICIPANTES DE SECUENCIA**:
-   - NUNCA incluyas estereotipos `<< ... >>` en las líneas `participant "Nombre" as Alias`. Usa la sintaxis limpia: `participant "Nombre" as Alias`.
-
-3. **PROHIBIDO LA PALABRA CLAVE `queue` EN DIAGRAMAS DE SECUENCIA**:
+2. **PROHIBIDO LA PALABRA CLAVE `queue` EN DIAGRAMAS DE SECUENCIA**:
    - `queue` NUNCA debe usarse en diagramas de secuencia. Usar `participant "Event Bus Kafka" as EventBus`.
 
-4. **PROHIBIDO USAR EL SÍMBOLO AMPERSAND '&' EN NOMBRES O ETIQUETAS**:
+3. **PROHIBIDO USAR EL SÍMBOLO AMPERSAND '&' EN NOMBRES O ETIQUETAS**:
    - Usa siempre la palabra `and` (ej: `Catalog and Inventory Service`).
 
-5. **PROHIBIDO USAR CORCHETES '[' O ']' EN ETIQUETAS DE FLECHAS**:
+4. **PROHIBIDO USAR CORCHETES '[' O ']' EN ETIQUETAS DE FLECHAS**:
    - NUNCA pongas corchetes `[` `]` dentro de textos de relación o eventos (ej: usa `Publish OrderCreated`).
 
-6. **PROHIBIDO USAR PARÉNTESIS '(' O ')' Y APÓSTROFES '\'' EN MENSAJES DE SECUENCIA**:
+5. **PROHIBIDO USAR PARÉNTESIS '(' O ')' Y APÓSTROFES '\'' EN MENSAJES DE SECUENCIA**:
    - NUNCA pongas apóstrofes `'` ni paréntesis `(` `)` dentro del string de mensaje en diagramas de secuencia (ej: usa `3b. Guardar Order en OrderDB PENDING_PAYMENT`).
 
-7. **PROHIBIDO USAR `!include` EXTERNOS O REMOTOS**:
+6. **PROHIBIDO USAR `!include` EXTERNOS O REMOTOS**:
    - NUNCA incluyas `!include <C4/...>` ni `!include https://...`. Usa componentes nativos de PlantUML.
 
-8. **ETIQUETAS DE FLECHAS Y MENSAJES LIMPIAS**:
+7. **ETIQUETAS DE FLECHAS Y MENSAJES LIMPIAS**:
    - NUNCA incluyas comas `,`, apóstrofes `'`, ampersands `&`, corchetes `[` `]`, paréntesis ni `<< >>` dentro del string de una flecha.
 
-9. **SIN ETIQUETAS HTML EN NOTAS O COMPONENTES**:
+8. **SIN ETIQUETAS HTML EN NOTAS O COMPONENTES**:
    - Prohibido `<b>`, `<br>`, `<i>`. Usar sintaxis multilínea estándar `note right \n ... \n end note`.
 
-10. **SIMETRÍA EN ACTIVACIONES DE SECUENCIA**:
+9. **SIMETRÍA EN ACTIVACIONES DE SECUENCIA**:
    - En bloques `alt ... else ... end`, cada `deactivate Participant` debe tener un `activate Participant` previo dentro de su propia rama.
+
+10. **PLANTUML SALT UI MOCKUPS (`@startsalt`)**:
+   - Prohibido anidar `( )` dentro de botones `[ ]`. Sin comas, apóstrofes, ampersands ni marcadores Markdown (`**`) dentro de Salt.
