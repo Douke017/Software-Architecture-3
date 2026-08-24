@@ -1,35 +1,51 @@
 # Guía Maestra de Diagramación C4 con Structurizr & C4-PlantUML (Master C4 Standard)
 
-Esta guía define el estándar oficial e imperativo para generar **Diagramas del Modelo C4** (Nivel 1: Contexto, Nivel 2: Contenedores, Nivel 3: Componentes) utilizando la librería estándar nativa de **C4-PlantUML** (`!include <C4/...>`), garantizando la identidad visual oficial de Structurizr (tarjetas azules `«person»`, `«system»`, `«container»`, doradas `«queue»`, púrpuras `«database»` y grises `«external_system»`).
+Esta guía define el estándar oficial e imperativo para generar **Diagramas del Modelo C4** (Nivel 1: Contexto, Nivel 2: Contenedores, Nivel 3: Componentes) utilizando la librería estándar nativa de **C4-PlantUML** (`!include <C4/...>`), garantizando la identidad visual oficial de Structurizr y el enrutamiento perfecto de todas las flechas y relaciones (`Rel`).
 
 ---
 
-## 1. Reglas Sintácticas Críticas de Macros C4-PlantUML (Zero-Error Protocol)
+## 1. Protocolo Imperativo C4-PlantUML (Zero-Error Rules)
 
 1. **INCLUSIONES OFICIALES DE LA LIBRERÍA ESTÁNDAR C4**:
    - **Nivel 1 (Contexto)**: `!include <C4/C4_Context>`
    - **Nivel 2 (Contenedores)**: `!include <C4/C4_Container>`
    - **Nivel 3 (Componentes)**: `!include <C4/C4_Component>`
-   *(Nota: `plantuml.jar` incluye estas librerías de forma nativa e integrada sin requerir conexión a internet).*
 
-2. **REGLA DE ORO: PROHIBIDAS LAS COMAS ',' DENTRO DE ARGUMENTOS DE TEXTO**:
-   - El preprocesador de macros de PlantUML divide los parámetros de las macros en cada coma `,`, incluso si está dentro de comillas dobles `"..."`.
-   - **INCORRECTO (Rompe el preprocesador C4)**: `Person(cliente, "Cliente", "Realiza pedidos, paga y recibe alertas")`
-   - **CORRECTO (Usa conjunciones o guiones)**: `Person(cliente, "Cliente", "Realiza pedidos y paga y recibe alertas")`
-
-3. **ESTRUCTURA DE PARÁMETROS EN MACROS C4**:
+2. **NOMBRES DE MACROS OFICIALES EN C4-PLANTUML (NOMBRES ESTRICTOS)**:
    - `Person(alias, "Nombre", "Descripción")`
    - `System(alias, "Nombre", "Descripción")`
-   - `System_Ext(alias, "Nombre", "Descripción")`
+   - `System_Ext(alias, "Nombre", "Descripción")`  *(PROHIBIDO usar ExternalSystem)*
    - `Container(alias, "Nombre", "Tecnología", "Descripción")`
    - `ContainerDb(alias, "Nombre", "Tecnología", "Descripción")`
    - `ContainerQueue(alias, "Nombre", "Tecnología", "Descripción")`
    - `Component(alias, "Nombre", "Tecnología", "Descripción")`
    - `Rel(origen, destino, "Etiqueta de Acción", "Protocolo o Tecnología")`
 
-4. **LÍMITES DE SISTEMA Y CONTENEDOR**:
-   - Para agrupar servicios en Nivel 2: `System_Boundary(c1, "Ecosistema PedidosYa EDA") { ... }`
-   - Para agrupar componentes en Nivel 3: `Container_Boundary(c2, "Order Service") { ... }`
+3. **BALANCE EXACTO DE COMILLAS DOBLES EN CADA ARGUMENTO**:
+   - Todo texto dentro de una macro DEBE estar estrictamente encerrado entre comillas dobles `"..."`.
+   - **INCORRECTO**: `ContainerDb(search_idx, Search Index", "Elasticsearch", "Motor")`
+   - **CORRECTO**: `ContainerDb(search_idx, "Search Index", "Elasticsearch", "Motor")`
+
+4. **CIERRE OBLIGATORIO DE `System_Boundary` ANTES DE LAS RELACIONES `Rel` (REGLA DE LAS FLECHAS)**:
+   - Declara todos los contenedores dentro del bloque `System_Boundary(c1, "Nombre del Sistema") { ... }`.
+   - **DEBES CERRAR EL BLOQUE CON `}` ANTES DE ESCRIBIR LAS RELACIONES `Rel(...)`**.
+   - Si colocas las relaciones dentro del `System_Boundary`, el motor de diagramación pierde el cálculo de rutas y no dibuja las flechas entre clientes y contenedores.
+
+5. **TOPOLOGÍA COMPLETA DE FLECHAS Y CONEXIONES (PROHIBIDO CONTENEDORES SIN FLECHAS)**:
+   - Todo contenedor en el diagrama DEBE tener sus conexiones explícitas:
+     - Flecha del Cliente al API Gateway.
+     - Flechas del API Gateway a los BFFs (`web_bff`, `mobile_bff`).
+     - Flechas de los BFFs a los microservicios de dominio.
+     - Flechas de cada microservicio a su base de datos exclusiva (`ContainerDb`).
+     - Flechas de publicación y consumo hacia el bus de eventos (`ContainerQueue`).
+     - Flechas hacia los sistemas externos (`System_Ext`).
+
+6. **DECLARACIÓN PREVIA OBLIGATORIA (SIN ALIAS HUÉRFANOS)**:
+   - Toda relación `Rel(origen, destino, ...)` DEBE referenciar ÚNICAMENTE aliases que hayan sido declarados previamente arriba en ese mismo diagrama.
+
+7. **REGLA DE UNA SOLA LÍNEA POR MACRO Y PROHIBIDAS LAS COMAS EN TEXTOS**:
+   - Cada llamada a macro DEBE estar en una **sola línea continua** (sin saltos de línea `ENTER` dentro de los argumentos).
+   - NUNCA uses comas `,` dentro de los textos entre comillas (usa conjunciones `y` o guiones `-`).
 
 ---
 
@@ -39,30 +55,25 @@ Esta guía define el estándar oficial e imperativo para generar **Diagramas del
 @startuml
 !include <C4/C4_Context>
 
-title Modelo C4 - Nivel 1: Diagrama de Contexto de Sistema (PedidosYa EDA)
+title Modelo C4 - Nivel 1: Diagrama de Contexto de Sistema (Structurizr C4)
 
-Person(client, "Cliente", "Usuario que realiza pedidos de comida y recibe alertas de demanda")
-Person(restaurant, "Restaurante / Cocina", "Personal que acepta y prepara pedidos y gestiona capacidad")
-Person(driver, "Repartidor / Conductor", "Repartidor que transporta la comida y actualiza disponibilidad")
+Person(client, "Cliente", "Usuario que realiza compras y consulta productos en la plataforma")
 
-System(system, "Plataforma PedidosYa EDA", "Sistema distribuido orientado a eventos con gestion de contrapresion")
+System(system, "Plataforma ShopStream EDA", "Sistema distribuido de comercio electronico orientado a eventos")
 
-System_Ext(payment, "Pasarela de Pagos", "Procesa pagos con tarjeta de credito o debito")
+System_Ext(payment, "Pasarela de Pagos Externa", "Procesa pagos con tarjeta de credito y debito")
 System_Ext(notification, "Servicio Notificaciones Push/SMS", "Envia mensajes y alertas a telefonos moviles")
 
-Rel(client, system, "Realiza pedidos y consulta estado con feedback de demanda", "HTTPS / Mobile App")
-Rel(restaurant, system, "Acepta pedidos y notifica preparacion con indicador de carga", "HTTPS / Tablet App")
-Rel(driver, system, "Recibe asignacion de entregas y actualiza GPS con impacto de demanda", "HTTPS / Driver App")
-
+Rel(client, system, "Navega catalogo y gestiona carrito y realiza pedidos", "HTTPS / Mobile App")
 Rel(system, payment, "Autoriza cobros y procesa reembolsos", "REST / HTTPS")
-Rel(system, notification, "Envia SMS o Push incluyendo alertas de contrapresion", "REST / HTTPS")
+Rel(system, notification, "Envia confirmaciones de compra y tracking", "REST / HTTPS")
 
 @enduml
 ```
 
 ---
 
-## 3. Plantilla Maestra Nivel 2: Diagrama de Contenedores y Bases de Datos (MSA & EDA)
+## 3. Plantilla Maestra Nivel 2: Diagrama de Contenedores Completo con Todas las Flechas
 
 ```plantuml
 @startuml
@@ -70,101 +81,79 @@ Rel(system, notification, "Envia SMS o Push incluyendo alertas de contrapresion"
 
 title Modelo C4 - Nivel 2: Diagrama de Contenedores de Microservicios (Structurizr C4)
 
-Person(client, "Cliente", "Usuario de la aplicacion movil")
-Person(restaurant, "Restaurante", "Personal de cocina")
-Person(driver, "Repartidor", "Conductor de entregas")
+Person(client, "Cliente", "Usuario comprador en plataforma web o movil")
 
-System_Boundary(c1, "Ecosistema PedidosYa EDA") {
-    Container(api_gw, "API Gateway / BFF", "Kong / Envoy", "Punto unico de entrada con autenticacion y rate limiting")
+System_Boundary(c1, "Plataforma ShopStream EDA") {
+    Container(api_gw, "API Gateway", "Kong / Envoy", "Punto unico de entrada con autenticacion y rate limiting")
     
-    Container(order_svc, "Order Service", "Java / Spring Boot", "Orquesta ciclo de vida del pedido y transacciones")
-    ContainerDb(order_db, "Order DB", "PostgreSQL", "Almacen transaccional ACID de pedidos y outbox")
+    Container(web_bff, "Web BFF", "Node.js / GraphQL", "Backend para frontend web agrega datos y catalogo")
+    Container(mobile_bff, "Mobile BFF", "Java / Spring Boot", "Backend para frontend movil optimiza payloads")
     
-    Container(rest_svc, "Restaurant Service", "Node.js / Express", "Gestiona aceptacion y tiempos de preparacion")
-    ContainerDb(rest_db, "Restaurant DB", "MongoDB", "Almacen de catalogos y pedidos de cocina")
+    Container(customer_svc, "Customer Service", "Java / Spring Boot", "Gestiona perfiles autenticacion y direcciones")
+    ContainerDb(customer_db, "Customer DB", "PostgreSQL", "Almacen relacional de perfiles y usuarios")
     
-    Container(deliv_svc, "Delivery Service", "Go / Gin", "Asignacion de conductores y tracking de rutas")
-    ContainerDb(deliv_db, "Delivery DB", "PostgreSQL + PostGIS", "Almacen geoespacial de conductores")
+    Container(catalog_svc, "Catalog Service", "Python / FastAPI", "Administra productos categorias y precios base")
+    ContainerDb(catalog_db, "Catalog DB", "MongoDB", "Almacen de documentos de productos")
     
-    Container(notif_svc, "Notification Service", "Python / FastAPI", "Despacho multicanal de emails SMS y push")
+    Container(inventory_svc, "Inventory Service", "Go / Gin", "Controla stock reservas y disponibilidad")
+    ContainerDb(inventory_db, "Inventory DB", "PostgreSQL", "Almacen transaccional de inventario")
     
-    Container(loyalty_svc, "Loyalty Service", "Java / Quarkus", "Gestion de puntos y recompensas")
-    ContainerDb(loyalty_db, "Loyalty DB", "PostgreSQL", "Balance de puntos y transacciones")
+    Container(cart_svc, "Cart Service", "Go / Gin", "Mantiene carrito de compras efimero y calculo de totales")
+    ContainerDb(cart_store, "Cart Store", "Redis Cluster", "Almacen en memoria de carritos de compra")
     
-    Container(analytics_svc, "Analytics Service", "Python / Apache Flink", "Procesamiento de eventos analiticos")
-    ContainerDb(analytics_dw, "Analytics DW", "ClickHouse", "Data Warehouse en tiempo real")
+    Container(order_svc, "Order Service", "Java / Quarkus", "Orquesta maquina de estados del pedido y Saga")
+    ContainerDb(order_db, "Order DB", "PostgreSQL", "Almacen transaccional de pedidos y outbox")
+    
+    Container(payment_svc, "Payment Service", "Java / Spring Boot", "Orquesta cobros tokenizacion y reembolsos")
+    ContainerDb(payment_db, "Payment DB", "PostgreSQL", "Almacen de transacciones financieras y conciliacion")
+    
+    Container(cms_svc, "CMS Service", "Node.js / Strapi", "Entrega banners promociones y contenido editorial")
+    ContainerDb(cms_db, "CMS DB", "PostgreSQL", "Almacen de contenido editorial")
     
     ContainerQueue(event_bus, "Event Bus", "Apache Kafka", "Broker distribuido de eventos inmutables de alta concurrencia")
 }
 
 System_Ext(payment_gate, "Pasarela de Pagos Externa", "API REST externa para procesamiento de tarjetas")
 
-' Relaciones de Clientes al Gateway
-Rel(client, api_gw, "Realiza pedidos y consulta estado", "HTTPS / JSON")
-Rel(restaurant, api_gw, "Acepta pedidos y actualiza cocina", "HTTPS / WebSockets")
-Rel(driver, api_gw, "Actualiza posicion GPS y estado de entrega", "gRPC / HTTPS")
+' 1. Clientes a API Gateway
+Rel(client, api_gw, "Accede a la plataforma", "HTTPS / JSON")
 
-' Gateway a Microservicios
-Rel(api_gw, order_svc, "Enruta checkout y creacion de pedidos", "gRPC / Sincrono")
-Rel(api_gw, rest_svc, "Consulta estado de restaurantes", "REST / Sincrono")
-Rel(api_gw, deliv_svc, "Consulta tracking de repartidor", "REST / Sincrono")
+' 2. API Gateway a BFFs
+Rel(api_gw, web_bff, "Enruta trafico web", "HTTPS / gRPC")
+Rel(api_gw, mobile_bff, "Enruta trafico movil", "HTTPS / gRPC")
 
-' Microservicios y sus Bases de Datos Exclusivas (Database-per-Service)
-Rel(order_svc, order_db, "Lee y escribe estado de pedidos", "JDBC / SSL")
-Rel(rest_svc, rest_db, "Lee y escribe tickets de cocina", "Mongo Driver")
-Rel(deliv_svc, deliv_db, "Consultas geoespaciales de conductores", "PostGIS Driver")
-Rel(loyalty_svc, loyalty_db, "Actualiza balance de puntos", "JDBC / SSL")
-Rel(analytics_svc, analytics_dw, "Inserta registros de eventos", "ClickHouse Client")
+' 3. Web BFF a Microservicios
+Rel(web_bff, customer_svc, "Consulta perfil de usuario", "gRPC / Sincrono")
+Rel(web_bff, catalog_svc, "Consulta productos y categorias", "gRPC / Sincrono")
+Rel(web_bff, cms_svc, "Obtiene banners y promociones", "gRPC / Sincrono")
+Rel(web_bff, cart_svc, "Gestiona carrito de compras", "gRPC / Sincrono")
+Rel(web_bff, order_svc, "Inicia proceso de checkout", "gRPC / Sincrono")
 
-' Integracion Externa Sincrona Protegida
-Rel(order_svc, payment_gate, "Autoriza cobros con Circuit Breaker", "REST / HTTPS")
+' 4. Mobile BFF a Microservicios
+Rel(mobile_bff, customer_svc, "Consulta perfil de usuario", "gRPC / Sincrono")
+Rel(mobile_bff, catalog_svc, "Consulta productos y categorias", "gRPC / Sincrono")
+Rel(mobile_bff, cart_svc, "Gestiona carrito de compras", "gRPC / Sincrono")
+Rel(mobile_bff, order_svc, "Inicia proceso de checkout", "gRPC / Sincrono")
 
-' Publicacion y Consumo de Eventos Asincronos (EDA)
+' 5. Microservicios a sus Bases de Datos Exclusivas (Database-per-Service)
+Rel(customer_svc, customer_db, "Lee y escribe datos de cliente", "JDBC / SSL")
+Rel(catalog_svc, catalog_db, "Lee y escribe catalogo de productos", "Mongo Driver")
+Rel(inventory_svc, inventory_db, "Actualiza stock y reservas", "JDBC / SSL")
+Rel(cms_svc, cms_db, "Lee y escribe articulos y banners", "JDBC / SSL")
+Rel(cart_svc, cart_store, "Almacena y recupera items del carrito", "Redis Protocol")
+Rel(order_svc, order_db, "Almacena pedidos y tabla outbox", "JDBC / SSL")
+Rel(payment_svc, payment_db, "Registra pagos y conciliaciones", "JDBC / SSL")
+
+' 6. Integracion Externa Sincrona
+Rel(payment_svc, payment_gate, "Autoriza cobros con Circuit Breaker", "REST / HTTPS")
+
+' 7. Publicacion y Consumo de Eventos Asincronos (EDA via Kafka)
 Rel(order_svc, event_bus, "Publish OrderPlaced", "Kafka Protocol")
-Rel(event_bus, rest_svc, "Consume OrderPlaced", "Kafka Protocol")
-Rel(rest_svc, event_bus, "Publish OrderAccepted", "Kafka Protocol")
-Rel(event_bus, deliv_svc, "Consume OrderAccepted", "Kafka Protocol")
-Rel(deliv_svc, event_bus, "Publish DriverAssigned y OrderDelivered", "Kafka Protocol")
-Rel(event_bus, notif_svc, "Consume todos los eventos del pedido", "Kafka Protocol")
-Rel(event_bus, loyalty_svc, "Consume OrderPlaced y OrderDelivered", "Kafka Protocol")
-Rel(event_bus, analytics_svc, "Consume stream de eventos de negocio", "Kafka Protocol")
-
-@enduml
-```
-
----
-
-## 4. Plantilla Maestra Nivel 3: Diagrama de Componentes del Order Service
-
-```plantuml
-@startuml
-!include <C4/C4_Component>
-
-title Modelo C4 - Nivel 3: Diagrama de Componentes de Order Service (Structurizr C4)
-
-Container_Boundary(c1, "Order Service") {
-    Component(order_ctrl, "Order REST Controller", "Spring REST Controller", "Expone endpoints HTTP para creacion y consulta de pedidos")
-    Component(order_mgr, "Order Management Service", "Spring Service Bean", "Implementa reglas de negocio y maquina de estados de pedidos")
-    Component(outbox_pub, "Outbox Event Publisher", "Transactional Outbox Component", "Persiste eventos en tabla outbox dentro de la transaccion local")
-    Component(order_repo, "Order Repository", "Spring Data JPA", "Gestiona la persistencia de entidades de pedido en PostgreSQL")
-    Component(event_listener, "Order Event Listener", "Kafka Consumer Listener", "Escucha eventos compensatorios o confirmaciones de pago")
-}
-
-ContainerDb(order_db, "Order DB", "PostgreSQL", "Almacena tablas de orders y outbox_events")
-ContainerQueue(event_bus, "Event Bus", "Apache Kafka", "Broker distribuido de eventos")
-Component_Ext(debezium, "Debezium CDC Connector", "Kafka Connect", "Lee el WAL de PostgreSQL y publica en Kafka")
-
-Rel(order_ctrl, order_mgr, "Invoca operaciones de pedido", "Metodo Java")
-Rel(order_mgr, order_repo, "Persiste agregado de pedido", "Metodo Java")
-Rel(order_mgr, outbox_pub, "Registra evento de negocio", "Metodo Java")
-Rel(order_repo, order_db, "Escribe en tabla orders", "SQL / ACID")
-Rel(outbox_pub, order_db, "Escribe en tabla outbox_events", "SQL / ACID")
-
-Rel(debezium, order_db, "Lee cambios en WAL de outbox_events", "PostgreSQL CDC")
-Rel(debezium, event_bus, "Publica eventos en topic order-events", "Kafka Protocol")
-
-Rel(event_bus, event_listener, "Consume eventos de pago o cancelacion", "Kafka Protocol")
-Rel(event_listener, order_mgr, "Dispara transicion de estado", "Metodo Java")
+Rel(event_bus, payment_svc, "Consume OrderPlaced para cobro", "Kafka Protocol")
+Rel(payment_svc, event_bus, "Publish PaymentProcessed", "Kafka Protocol")
+Rel(event_bus, order_svc, "Consume PaymentProcessed", "Kafka Protocol")
+Rel(event_bus, inventory_svc, "Consume OrderPlaced para reserva de stock", "Kafka Protocol")
+Rel(inventory_svc, event_bus, "Publish StockReserved y StockReleased", "Kafka Protocol")
 
 @enduml
 ```

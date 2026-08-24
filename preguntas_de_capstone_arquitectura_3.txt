@@ -1,0 +1,20 @@
+1. ¿Cuál es la filosofía arquitectónica principal detrás de los microservicios?
+2. Comparado con una arquitectura monolítica, un beneficio clave de los microservicios es?
+3. El “Principio de Responsabilidad Única” en el contexto de microservicios significa que?
+4. Un desafío importante introducido por la arquitectura de microservicios es? mencionar alguno
+5. ¿Qué característica es esencial para que los servicios sean “desplegables independientemente”?
+6. En microservicios, a que se refiere “persistencia políglota"?
+7. Al diseñar microservicios, definir los límites de servicio se guía mejor por que cosas?
+8. Cual es el propósito principal del patrón “API Gateway”?
+9. El patrón “Backend for Frontend” (BFF) aborda específicamente:
+10. El patrón “Circuit Breaker” se usa para:
+11. En el contexto de gestión de datos, el patrón “Database per Service” enfatiza que cosa?
+12. El patrón SAGA se usa principalmente para gestiona que?
+13. En Domain-Driven Design (DDD), un “Bounded Context” es crucial para microservicios porque?
+14. El “Aggregate” de DDD es importante en microservicios porque? 
+15. Según la metodología 12-Factor App, la configuración que varía entre despliegues debería almacenarse donde?
+16. ¿Cuál es un beneficio clave del “acoplamiento débil” entre microservicios?
+17. ¿Qué estilo de comunicación entre servicios se usa típicamente para notificaciones en tiempo real o actualizaciones basadas en eventos?
+18. El “aislamiento de fallos” en microservicios significa:
+19. Describir uno o dos factores de los 12-factor, como lo aplicas, como se relaciona, como lo aplicarias a tu proyecto Capstone?
+20. ¿Qué concepto de DDD proporciona una forma estructurada de definir relaciones y contratos entre diferentes Contextos Delimitados?

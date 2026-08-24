@@ -1,0 +1,30 @@
+¿Cuáles son los tres o cuatro architectural drivers que más condicionaron su arquitectura, y por qué esos y no otros?
+Si tuvieran que eliminar uno de esos drivers del problema, ¿qué parte de su arquitectura cambiaría significativamente?
+¿Qué ambigüedad del enunciado original consideran que tenía mayor impacto arquitectónico?
+¿Qué supuesto tuvieron que introducir porque el requerimiento no estaba suficientemente definido? ¿Qué pasaría si ese supuesto fuera incorrecto?
+¿Qué stakeholder tendría más capacidad de cambiar su arquitectura con un nuevo requerimiento: estudiantes, profesores, administración, seguridad, NIS u otro? ¿Por qué?
+¿Por qué eligieron este estilo arquitectónico y no un monolito modular?
+¿Por qué eligieron este estilo arquitectónico y no microservicios?
+¿Qué beneficio concreto obtiene el sistema de la arquitectura elegida y qué costo introduce?
+Si el sistema tuviera solamente 500 usuarios y un único campus, ¿mantendrían la misma arquitectura?
+Si el sistema creciera de los aproximadamente 5.000 usuarios actuales a 100.000 usuarios, ¿qué componente sería probablemente el primero en convertirse en cuello de botella?
+Elegí uno de los componentes principales de tu arquitectura: ¿cuál es exactamente su responsabilidad y qué responsabilidad deliberadamente NO tiene?
+¿Por qué este componente es independiente y no forma parte de otro componente del sistema?
+¿Qué bounded contexts identificaron? ¿Cuál fue el criterio utilizado para definir sus límites?
+Hay información de usuario en varias partes del sistema. ¿Quién es el owner de esos datos?
+¿Qué sucede si dos componentes necesitan información sobre el mismo usuario? ¿Comparten base de datos, replican información o consultan al propietario?
+¿Qué interfaz consideran más crítica en todo el sistema y qué pasaría si cambia?
+En uno de sus diagramas, elegí una flecha cualquiera: ¿qué información exactamente viaja por esa interacción?
+¿Esa comunicación es síncrona o asíncrona? ¿Por qué?
+¿Qué ocurriría si el servicio receptor de esa interacción estuviera caído durante diez minutos?
+¿Existe algún componente de su arquitectura cuya falla pueda provocar un fallo en cascada? ¿Cómo lo evitarían?
+El NIS tarda potencialmente dos horas. ¿Qué estado tiene un usuario dentro del DAS durante esas dos horas?
+¿Qué sucede si enviaron una solicitud al NIS pero nunca reciben respuesta?
+¿Qué estrategia de retry utilizarían para NIS? ¿Por qué no reintentar simplemente cada segundo?
+¿Cómo evitarían procesar dos veces una misma respuesta del NIS?
+Si el NIS cambia su API mañana, ¿qué partes de su sistema deberían verse afectadas?
+¿Qué ocurre si un dispositivo de captura de asistencia pierde conectividad durante una hora?
+Cuando recupera conectividad, ¿cómo evita el sistema perder eventos, duplicarlos o procesarlos fuera de orden?
+¿Qué significa concretamente “near real-time” en su arquitectura? ¿Un segundo, diez segundos, un minuto? ¿Cómo cambiaría el diseño según esa decisión?
+Tienen que conservar asistencia durante cinco años. ¿Guardarían todos esos datos de la misma manera durante los cinco años? ¿Por qué?
+Si después de implementar el sistema descubrieran que una decisión arquitectónica importante fue incorrecta, ¿cuál creen que sería la más costosa de cambiar y por qué?
